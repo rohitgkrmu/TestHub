@@ -2,20 +2,19 @@
 {% block title %}Course Details{% endblock %}
 {% block content %}
 <div class="container mt-4">
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <div class="text-center w-100">
-      <h2 class="mb-0">{{ course.name }}</h2>
-    </div>
-    <div>
-      {% if prev_course %}
-        <a class="btn btn-secondary" href="{{ url_for('courses.view_course', course_id=prev_course.id) }}" role="button">&#8592;</a>
-      {% endif %}
-      {% if next_course %}
-        <a class="btn btn-secondary" href="{{ url_for('courses.view_course', course_id=next_course.id) }}" role="button">&#8594;</a>
-      {% endif %}
-    </div>
+  <div class="text-center w-100">
+    <h2 class="mb-0">{{ course.name }}</h2>
   </div>
-  <div class="card mb-4">
+  <div class="text-center mt-2">
+    {% if prev_course %}
+      <a class="btn btn-secondary" href="{{ url_for('courses.view_course', course_id=prev_course.id) }}" role="button">&#8592; Previous Course</a>
+    {% endif %}
+    {% if next_course %}
+      <a class="btn btn-secondary" href="{{ url_for('courses.view_course', course_id=next_course.id) }}" role="button">Next Course &#8594;</a>
+    {% endif %}
+  </div>
+
+  <div class="card mt-4 mx-auto" style="max-width: 800px;">
     <div class="card-header">
       <h4>Course Details</h4>
     </div>
@@ -32,79 +31,148 @@
     </div>
   </div>
 
-  <h3 class="text-center">Questions</h3>
-  <p class="text-center">Total Questions: {{ total_questions }}</p>
+  <div class="text-center mt-4">
+    <h3>Questions Summary</h3>
+    <p>Total Questions: {{ total_questions }}</p>
+    <div class="row">
+      <div class="col-md-4">
+        <h5>Difficulty Levels</h5>
+        <table class="table table-bordered table-sm">
+          <thead>
+            <tr>
+              <th>Difficulty</th>
+              <th>Count</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for difficulty, count in difficulty_data.items() %}
+            <tr style="height: 30px;">
+              <td>{{ difficulty }}</td>
+              <td>{{ count }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="col-md-4">
+        <h5>Topics</h5>
+        <table class="table table-bordered table-sm">
+          <thead>
+            <tr>
+              <th>Topic</th>
+              <th>Count</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for topic, count in topic_data.items() %}
+            <tr style="height: 30px;">
+              <td>{{ topic }}</td>
+              <td>{{ count }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="col-md-4">
+        <h5>Question Types</h5>
+        <table class="table table-bordered table-sm">
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Count</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for question_type, count in type_data.items() %}
+            <tr style="height: 30px;">
+              <td>{{ question_type }}</td>
+              <td>{{ count }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 
-  <!-- Search, Sort, and Filter Form -->
-  <form method="GET" action="{{ url_for('courses.view_course', course_id=course.id) }}" class="form-inline justify-content-center mb-4">
-    <input type="text" name="search" class="form-control mr-2" placeholder="Search">
-    <select name="bloom_level" class="form-control mr-2">
-      <option value="">All Bloom Levels</option>
-      {% for bloom_level in bloom_levels %}
-      <option value="{{ bloom_level[0] }}">{{ bloom_level[0] }}</option>
-      {% endfor %}
-    </select>
-    <select name="difficulty" class="form-control mr-2">
-      <option value="">All Difficulties</option>
-      {% for difficulty in difficulties %}
-      <option value="{{ difficulty[0] }}">{{ difficulty[0] }}</option>
-      {% endfor %}
-    </select>
-    <select name="question_type" class="form-control mr-2">
-      <option value="">All Question Types</option>
-      {% for question_type in question_types %}
-      <option value="{{ question_type[0] }}">{{ question_type[0] }}</option>
-      {% endfor %}
-    </select>
-    <select name="per_page" class="form-control mr-2">
-      <option value="10" {% if per_page == 10 %}selected{% endif %}>10</option>
-      <option value="50" {% if per_page == 50 %}selected{% endif %}>50</option>
-      <option value="100" {% if per_page == 100 %}selected{% endif %}>100</option>
-    </select>
-    <button type="submit" class="btn btn-primary">Apply</button>
-  </form>
+  <div class="text-center mt-4">
+    <h3>Questions</h3>
+    <form method="get" action="{{ url_for('courses.view_course', course_id=course.id) }}">
+      <div class="form-row">
+        <div class="col">
+          <input type="text" class="form-control" name="search" placeholder="Search" value="{{ search_query }}">
+        </div>
+        <div class="col">
+          <select class="form-control" name="difficulty">
+            <option value="">Difficulty</option>
+            <option value="Easy" {% if difficulty == 'Easy' %}selected{% endif %}>Easy</option>
+            <option value="Medium" {% if difficulty == 'Medium' %}selected{% endif %}>Medium</option>
+            <option value="Hard" {% if difficulty == 'Hard' %}selected{% endif %}>Hard</option>
+          </select>
+        </div>
+        <div class="col">
+          <select class="form-control" name="topic">
+            <option value="">Topic</option>
+            {% for topic, count in topic_data.items() %}
+            <option value="{{ topic }}" {% if topic == topic %}selected{% endif %}>{{ topic }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col">
+          <select class="form-control" name="question_type">
+            <option value="">Question Type</option>
+            {% for question_type, count in type_data.items() %}
+            <option value="{{ question_type }}" {% if question_type == question_type %}selected{% endif %}>{{ question_type }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col">
+          <button type="submit" class="btn btn-primary">Filter</button>
+        </div>
+      </div>
+    </form>
+  </div>
 
-  <table class="table table-striped">
-    <thead>
-      <tr>
-        <th scope="col"><a href="{{ url_for('courses.view_course', course_id=course.id, sort_by='id', sort_order='asc') }}">#</a></th>
-        <th scope="col"><a href="{{ url_for('courses.view_course', course_id=course.id, sort_by='content', sort_order='asc') }}">Content</a></th>
-        <th scope="col"><a href="{{ url_for('courses.view_course', course_id=course.id, sort_by='bloom_level', sort_order='asc') }}">Bloom Level</a></th>
-        <th scope="col"><a href="{{ url_for('courses.view_course', course_id=course.id, sort_by='topic', sort_order='asc') }}">Topic</a></th>
-        <th scope="col"><a href="{{ url_for('courses.view_course', course_id=course.id, sort_by='difficulty', sort_order='asc') }}">Difficulty</a></th>
-        <th scope="col"><a href="{{ url_for('courses.view_course', course_id=course.id, sort_by='question_type', sort_order='asc') }}">Question Type</a></th>
-        <th scope="col">Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for question in questions %}
-      <tr>
-        <th scope="row">{{ loop.index }}</th>
-        <td>{{ question.content }}</td>
-        <td>{{ question.bloom_level }}</td>
-        <td>{{ question.topic }}</td>
-        <td>{{ question.difficulty }}</td>
-        <td>{{ question.question_type }}</td>
-        <td>
-          <a href="{{ url_for('questions.view_question', question_id=question.id) }}" class="btn btn-info btn-sm">View</a>
-          <a href="{{ url_for('questions.edit_question', question_id=question.id) }}" class="btn btn-primary btn-sm">Edit</a>
-          <form action="{{ url_for('questions.delete_question', question_id=question.id) }}" method="post" style="display:inline;">
-            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-          </form>
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  
-  <!-- Pagination Controls -->
-  <nav aria-label="Page navigation">
+  <div class="table-responsive mt-3">
+    <table class="table table-striped text-center table-sm">
+      <thead>
+        <tr>
+          <th><a href="{{ url_for('courses.view_course', course_id=course.id, search=search_query, sort_by='id', sort_order='asc' if sort_order == 'desc' else 'desc') }}">#</a></th>
+          <th><a href="{{ url_for('courses.view_course', course_id=course.id, search=search_query, sort_by='content', sort_order='asc' if sort_order == 'desc' else 'desc') }}">Content</a></th>
+          <th><a href="{{ url_for('courses.view_course', course_id=course.id, search=search_query, sort_by='bloom_level', sort_order='asc' if sort_order == 'desc' else 'desc') }}">Bloom Level</a></th>
+          <th><a href="{{ url_for('courses.view_course', course_id=course.id, search=search_query, sort_by='topic', sort_order='asc' if sort_order == 'desc' else 'desc') }}">Topic</a></th>
+          <th><a href="{{ url_for('courses.view_course', course_id=course.id, search=search_query, sort_by='difficulty', sort_order='asc' if sort_order == 'desc' else 'desc') }}">Difficulty</a></th>
+          <th><a href="{{ url_for('courses.view_course', course_id=course.id, search=search_query, sort_by='question_type', sort_order='asc' if sort_order == 'desc' else 'desc') }}">Type</a></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for question in questions %}
+        <tr style="height: 30px;">
+          <td>{{ loop.index }}</td>
+          <td>{{ question.content }}</td>
+          <td>{{ question.bloom_level }}</td>
+          <td>{{ question.topic }}</td>
+          <td>{{ question.difficulty }}</td>
+          <td>{{ question.question_type }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <nav aria-label="Page navigation" class="mt-3">
     <ul class="pagination justify-content-center">
-      {% for page_num in range(1, pagination.pages + 1) %}
-      <li class="page-item {% if page == page_num %}active{% endif %}">
-        <a class="page-link" href="{{ url_for('courses.view_course', course_id=course.id, page=page_num, per_page=per_page) }}">{{ page_num }}</a>
+      <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
+        <a class="page-link" href="{{ url_for('courses.view_course', course_id=course.id, page=pagination.prev_num, search=search_query, sort_by=sort_by, sort_order=sort_order, difficulty=difficulty, topic=topic, question_type=question_type) }}">Previous</a>
+      </li>
+      {% for page_num in pagination.iter_pages() %}
+      <li class="page-item {% if page_num == pagination.page %}active{% endif %}">
+        <a class="page-link" href="{{ url_for('courses.view_course', course_id=course.id, page=page_num, search=search_query, sort_by=sort_by, sort_order=sort_order, difficulty=difficulty, topic=topic, question_type=question_type) }}">{{ page_num }}</a>
       </li>
       {% endfor %}
+      <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
+        <a class="page-link" href="{{ url_for('courses.view_course', course_id=course.id, page=pagination.next_num, search=search_query, sort_by=sort_by, sort_order=sort_order, difficulty=difficulty, topic=topic, question_type=question_type) }}">Next</a>
+      </li>
     </ul>
   </nav>
 

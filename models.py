@@ -38,6 +38,25 @@ class Question(db.Model):
     last_edited_at = db.Column(db.DateTime, nullable=True)
     course = db.relationship('Course', backref=db.backref('questions', lazy=True))
 
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'content': self.content,
+            'course_id': self.course_id,
+            'bloom_level': self.bloom_level,
+            'topic': self.topic,
+            'difficulty': self.difficulty,
+            'question_type': self.question_type,
+            'options': self.options,
+            'correct_answer': self.correct_answer,
+            'pairs': self.pairs,
+            'essay_details': self.essay_details,
+            'created_by': self.created_by,
+            'created_at': self.created_at.isoformat(),
+            'last_edited_by': self.last_edited_by,
+            'last_edited_at': self.last_edited_at.isoformat() if self.last_edited_at else None
+        }
+
 class Rubric(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)

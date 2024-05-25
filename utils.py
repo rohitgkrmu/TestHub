@@ -15,7 +15,9 @@ def apply_filters(query, model, search_fields, filter_fields):
     return query
 
 def apply_sorting(query, model):
-    sort_by = request.args.get('sort_by', 'id')
+    sort_by = request.args.get('sort_by', 'id')  # Default to 'id' if not provided or empty
+    if not sort_by or not hasattr(model, sort_by):
+        sort_by = 'id'  # Ensure sort_by is valid and falls back to 'id'
     sort_order = request.args.get('sort_order', 'asc')
     if sort_order == 'asc':
         query = query.order_by(getattr(model, sort_by).asc())

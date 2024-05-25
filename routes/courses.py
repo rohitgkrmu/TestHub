@@ -1,6 +1,7 @@
 from flask import Blueprint, request, render_template, redirect, url_for
 from models import db, Course, CourseOutcome, Question
 from utils import apply_filters, apply_sorting, apply_pagination
+from sqlalchemy import func
 
 course_bp = Blueprint('courses', __name__)
 
@@ -102,5 +103,30 @@ def view_course(course_id):
     prev_course = Course.query.filter(Course.id < course_id).order_by(Course.id.desc()).first()
     next_course = Course.query.filter(Course.id > course_id).order_by(Course.id.asc()).first()
 
-    return render_template('course_view.html', course=course, questions=questions, total_questions=total_questions, bloom_levels=bloom_levels, difficulties=difficulties, question_types=question_types, pagination=pagination, per_page=per_page, page=page, prev_course=prev_course, next_course=next_course)
+    # Summary statistics
+    difficulty_counts = db.session.query(Question.difficulty, func.count(Question.id)).filter_by(course_id=course_id).group_by(Question.difficulty).order_by(func.count(Question.id).desc()).all()
+    topic_counts = db.session.query(Question.topic, func.count(Question.id)).filter_by(course_id=course_id).group_by(Question.topic).order_by(func.count(Question.id).desc()).all()
+    type_counts = db.session.query(Question.question_type, func.count(Question.id)).filter_by(course_id=course_id).group_by(Question.question_type).order_by(func.count(Question.id).desc()).all()
 
+    difficulty_data = {d: c for d, c in difficulty_counts}
+    topic_data = {t: c for t, c in topic_counts}
+    type_data = {t: c for t, c in type_counts}
+
+    total_questions = sum(difficulty_data.values())
+
+    return render_template(
+        'course_view.html',
+        course=course, 
+        questions=questions,
+        total_questions=total_questions,
+        bloom_levels=bloom_levels,
+        difficulties=difficulties,
+        question_types=question_types,
+        pagination=pagination,
+        per_page=per_page, page=page,
+        prev_course=prev_course,
+        next_course=next_course,
+        difficulty_data=difficulty_data,
+        topic_data=topic_data,
+        type_data=type_data,
+    )

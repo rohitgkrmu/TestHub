@@ -1,0 +1,53 @@
+{
+  "exam": {
+    "title": "Sample Exam",
+    "total_questions": 30,
+    "time_limit_minutes": 90,
+    "sections": [
+      {
+        "name": "Section A",
+        "questions": [
+          {
+            "type": "Single Correct Answer",
+            "count": 10,
+            "difficulty_distribution": {
+              "Easy": 40,
+              "Medium": 40,
+              "Hard": 20
+            },
+            "topic_distribution": {
+              "Analytical Techniques": 5,
+              "Chromatography": 3
+            }
+          }
+        ]
+      },
+      {
+        "name": "Section B",
+        "questions": [
+          {
+            "type": "Short Essay",
+            "count": 3,
+            "difficulty_distribution": {
+              "easy": 33,
+              "medium": 33,
+              "hard": 34
+            },
+            "topic_distribution": {
+              "Analytical Techniques": 2,
+              "Topic 3": 1
+            }
+          }
+        ]
+      }
+    ],
+    "points_distribution": {
+      "Single Correct Answer": 1,
+      "Multiple Answer MCQ": 2,
+      "True/False": 1,
+      "Fill in the Blank": 1,
+      "Short Essay": 5,
+      "Long Essay": 10
+    }
+  }
+}
