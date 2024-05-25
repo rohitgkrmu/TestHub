@@ -112,5 +112,30 @@ def list_courses():
 @course_bp.route('/view/<int:course_id>', methods=['GET'])
 def view_course(course_id):
     course = Course.query.get_or_404(course_id)
-    questions = Question.query.filter_by(course_id=course_id).all()
-    return render_template('course_view.html', course=course, questions=questions)
+    query = Question.query.filter_by(course_id=course_id)
+
+    # Apply filters, sorting, and pagination for questions
+    search_fields = ['content', 'bloom_level', 'topic', 'difficulty', 'question_type']
+    filter_fields = ['bloom_level', 'difficulty', 'question_type']
+    query = apply_filters(query, Question, search_fields, filter_fields)
+    query = apply_sorting(query, Question)
+    questions, total_questions, pagination = apply_pagination(query)
+
+    bloom_levels = db.session.query(Question.bloom_level).distinct().all()
+    difficulties = db.session.query(Question.difficulty).distinct().all()
+    question_types = db.session.query(Question.question_type).distinct().all()
+
+    # Retrieve per_page and page from request arguments to pass to the template
+    per_page = int(request.args.get('per_page', 50))
+    page = int(request.args.get('page', 1))
+
+    # Get the previous and next courses
+    prev_course = Course.query.filter(Course.id < course_id).order_by(Course.id.desc()).first()
+    next_course = Course.query.filter(Course.id > course_id).order_by(Course.id.asc()).first()
+
+    return render_template('course_view.html', course=course, questions=questions, total_questions=total_questions, bloom_levels=bloom_levels, difficulties=difficulties, question_types=question_types, pagination=pagination, per_page=per_page, page=page, prev_course=prev_course, next_course=next_course)
+#@course_bp.route('/view/<int:course_id>', methods=['GET'])
+#def view_course(course_id):
+#    course = Course.query.get_or_404(course_id)
+#    questions = Question.query.filter_by(course_id=course_id).all()
+#    return render_template('course_view.html', course=course, questions=questions)
