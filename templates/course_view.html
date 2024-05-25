@@ -3,7 +3,9 @@
 {% block content %}
 <div class="container mt-4">
   <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="mb-0">{{ course.name }}</h2>
+    <div class="text-center w-100">
+      <h2 class="mb-0">{{ course.name }}</h2>
+    </div>
     <div>
       {% if prev_course %}
         <a class="btn btn-secondary" href="{{ url_for('courses.view_course', course_id=prev_course.id) }}" role="button">&#8592;</a>
