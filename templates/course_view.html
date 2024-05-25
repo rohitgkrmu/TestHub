@@ -133,6 +133,26 @@
     </form>
   </div>
 
+  <div class="text-center mt-3">
+    <a class="btn btn-primary btn-lg mb-2" href="{{ url_for('questions.create_question') }}" role="button">Add a New Question</a>
+  </div>
+
+  <nav aria-label="Page navigation" class="mt-3">
+    <ul class="pagination justify-content-center">
+      <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
+        <a class="page-link" href="{{ url_for('courses.view_course', course_id=course.id, page=pagination.prev_num, search=search_query, sort_by=sort_by, sort_order=sort_order, difficulty=difficulty, topic=topic, question_type=question_type) }}">Previous</a>
+      </li>
+      {% for page_num in pagination.iter_pages() %}
+      <li class="page-item {% if page_num == pagination.page %}active{% endif %}">
+        <a class="page-link" href="{{ url_for('courses.view_course', course_id=course.id, page=page_num, search=search_query, sort_by=sort_by, sort_order=sort_order, difficulty=difficulty, topic=topic, question_type=question_type) }}">{{ page_num }}</a>
+      </li>
+      {% endfor %}
+      <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
+        <a class="page-link" href="{{ url_for('courses.view_course', course_id=course.id, page=pagination.next_num, search=search_query, sort_by=sort_by, sort_order=sort_order, difficulty=difficulty, topic=topic, question_type=question_type) }}">Next</a>
+      </li>
+    </ul>
+  </nav>
+
   <div class="table-responsive mt-3">
     <table class="table table-striped text-center table-sm">
       <thead>
@@ -148,7 +168,7 @@
       <tbody>
         {% for question in questions %}
         <tr style="height: 30px;">
-          <td>{{ loop.index }}</td>
+          <td>{{ loop.index + ((pagination.page - 1) * pagination.per_page) }}</td>
           <td>{{ question.content }}</td>
           <td>{{ question.bloom_level }}</td>
           <td>{{ question.topic }}</td>
@@ -176,8 +196,8 @@
     </ul>
   </nav>
 
-  <div class="text-center mt-4">
-    <a class="btn btn-primary btn-lg" href="{{ url_for('questions.create_question') }}" role="button">Add a New Question</a>
+  <div class="text-center mt-3">
+    <a class="btn btn-primary btn-lg mb-2" href="{{ url_for('questions.create_question') }}" role="button">Add a New Question</a>
   </div>
 </div>
 {% endblock %}
