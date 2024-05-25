@@ -63,42 +63,11 @@ def delete_course(course_id):
 def list_courses():
     query = Course.query
 
-    # Search functionality
-    #search = request.args.get('search')
-    #if search:
-    #    query = query.filter(or_(Course.course_code.ilike(f'%{search}%'),
-    #                             Course.name.ilike(f'%{search}%'),
-    #                             Course.school.ilike(f'%{search}%'),
-    #                             Course.department.ilike(f'%{search}%')))
-
     search_fields = ['course_code', 'name', 'school', 'department']
     filter_fields = ['school', 'department']
     query = apply_filters(query, Course, search_fields, filter_fields)
     query = apply_sorting(query, Course)
     courses, total_courses, pagination = apply_pagination(query)
-
-    """# Filter functionality
-    school_filter = request.args.get('school_filter')
-    department_filter = request.args.get('department_filter')
-    if school_filter:
-        query = query.filter(Course.school == school_filter)
-    if department_filter:
-        query = query.filter(Course.department == department_filter)
-
-    # Sort functionality
-    sort_by = request.args.get('sort_by', 'id')
-    sort_order = request.args.get('sort_order', 'asc')
-    if sort_order == 'asc':
-        query = query.order_by(getattr(Course, sort_by).asc())
-    else:
-        query = query.order_by(getattr(Course, sort_by).desc())
-
-    # Pagination
-    per_page = int(request.args.get('per_page', 50))
-    page = int(request.args.get('page', 1))
-    total_courses = query.count()
-    pagination = query.paginate(page=page, per_page=per_page, error_out=False)
-    courses = pagination.items"""
 
     # Retrieve per_page and page from request arguments to pass to the template
     per_page = int(request.args.get('per_page', 50))
@@ -134,8 +103,4 @@ def view_course(course_id):
     next_course = Course.query.filter(Course.id > course_id).order_by(Course.id.asc()).first()
 
     return render_template('course_view.html', course=course, questions=questions, total_questions=total_questions, bloom_levels=bloom_levels, difficulties=difficulties, question_types=question_types, pagination=pagination, per_page=per_page, page=page, prev_course=prev_course, next_course=next_course)
-#@course_bp.route('/view/<int:course_id>', methods=['GET'])
-#def view_course(course_id):
-#    course = Course.query.get_or_404(course_id)
-#    questions = Question.query.filter_by(course_id=course_id).all()
-#    return render_template('course_view.html', course=course, questions=questions)
+
