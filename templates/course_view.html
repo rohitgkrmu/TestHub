@@ -163,6 +163,7 @@
           <th><a href="{{ url_for('courses.view_course', course_id=course.id, search=search_query, sort_by='topic', sort_order='asc' if sort_order == 'desc' else 'desc') }}">Topic</a></th>
           <th><a href="{{ url_for('courses.view_course', course_id=course.id, search=search_query, sort_by='difficulty', sort_order='asc' if sort_order == 'desc' else 'desc') }}">Difficulty</a></th>
           <th><a href="{{ url_for('courses.view_course', course_id=course.id, search=search_query, sort_by='question_type', sort_order='asc' if sort_order == 'desc' else 'desc') }}">Type</a></th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -174,6 +175,10 @@
           <td>{{ question.topic }}</td>
           <td>{{ question.difficulty }}</td>
           <td>{{ question.question_type }}</td>
+          <td>
+            <a href="{{ url_for('questions.view_question', question_id=question.id) }}" class="btn btn-sm btn-info">View</a>
+            <a href="{{ url_for('questions.edit_question', question_id=question.id) }}" class="btn btn-sm btn-warning">Edit</a>
+          </td>
         </tr>
         {% endfor %}
       </tbody>
