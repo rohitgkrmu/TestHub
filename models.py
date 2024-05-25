@@ -41,8 +41,15 @@ class Question(db.Model):
 class Rubric(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    question_types = db.Column(db.Text, nullable=False)  # JSON string to store question types and their counts
+    sections = db.Column(db.Text, nullable=True)  # JSON string to store sections and their details
+    difficulty_levels = db.Column(db.Text, nullable=True)  # JSON string to store difficulty level distribution
+    coverage = db.Column(db.Text, nullable=True)  # JSON string to store coverage by topic/unit
+    time_limit = db.Column(db.Integer, nullable=True)  # Time limit in minutes
+    randomization = db.Column(db.Boolean, default=False)  # Whether to randomize questions
     course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
-    blueprint = db.Column(db.JSON)
+    course = db.relationship('Course', backref=db.backref('rubrics', lazy=True))
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)

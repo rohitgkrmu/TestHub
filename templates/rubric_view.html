@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Rubric Details{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <h2 class="text-center">{{ rubric.name }}</h2>
+  <div class="card mb-4">
+    <div class="card-header">
+      <h4>Rubric Details</h4>
+    </div>
+    <div class="card-body">
+      <p><strong>Description:</strong> {{ rubric.description }}</p>
+      <p><strong>Course:</strong> {{ rubric.course.name }}</p>
+      <p><strong>Question Types:</strong></p>
+      <pre>{{ rubric.question_types }}</pre>
+      <p><strong>Sections:</strong></p>
+      <pre>{{ rubric.sections }}</pre>
+      <p><strong>Difficulty Levels:</strong></p>
+      <pre>{{ rubric.difficulty_levels }}</pre>
+      <p><strong>Coverage:</strong></p>
+      <pre>{{ rubric.coverage }}</pre>
+      <p><strong>Time Limit:</strong> {{ rubric.time_limit }} minutes</p>
+      <p><strong>Randomize Questions:</strong> {{ rubric.randomization }}</p>
+    </div>
+  </div>
+  <div class="text-center mt-4">
+    <a class="btn btn-primary" href="{{ url_for('rubrics.list_rubrics') }}" role="button">Back to Rubrics</a>
+  </div>
+</div>
+{% endblock %}

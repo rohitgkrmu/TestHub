@@ -1,28 +1,52 @@
 {% extends "base.html" %}
-{% block title %}Create Rubric{% endblock %}
+{% block title %}Create/Edit Rubric{% endblock %}
 {% block content %}
-<div class="container mt-4 d-flex justify-content-center">
-  <div class="w-50">
-    <h2 class="text-center">Create Rubric</h2>
-    <form method="POST">
-      <div class="form-group">
-        <label for="name">Rubric Name:</label>
-        <input type="text" class="form-control" id="name" name="name" required>
-      </div>
-      <div class="form-group">
-        <label for="course_id">Course:</label>
-        <select class="form-control" id="course_id" name="course_id" required>
-          {% for course in courses %}
-          <option value="{{ course.id }}">{{ course.name }}</option>
-          {% endfor %}
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="blueprint">Blueprint (JSON):</label>
-        <textarea class="form-control" id="blueprint" name="blueprint" required></textarea>
-      </div>
-      <button type="submit" class="btn btn-primary btn-block">Create</button>
-    </form>
-  </div>
+<div class="container mt-4">
+  <h2 class="text-center">{{ 'Edit Rubric' if rubric else 'Create Rubric' }}</h2>
+  <form method="post" action="{{ url_for('rubrics.create_rubric' if not rubric else 'rubrics.edit_rubric', rubric_id=rubric.id if rubric else None) }}">
+    <div class="form-group">
+      <label for="name">Name</label>
+      <input type="text" class="form-control" id="name" name="name" value="{{ rubric.name if rubric else '' }}" required>
+    </div>
+    <div class="form-group">
+      <label for="description">Description</label>
+      <textarea class="form-control" id="description" name="description">{{ rubric.description if rubric else '' }}</textarea>
+    </div>
+    <div class="form-group">
+      <label for="question_types">Question Types (JSON format)</label>
+      <textarea class="form-control" id="question_types" name="question_types">{{ rubric.question_types if rubric else '' }}</textarea>
+    </div>
+    <div class="form-group">
+      <label for="sections">Sections (JSON format)</label>
+      <textarea class="form-control" id="sections" name="sections">{{ rubric.sections if rubric else '' }}</textarea>
+    </div>
+    <div class="form-group">
+      <label for="difficulty_levels">Difficulty Levels (JSON format)</label>
+      <textarea class="form-control" id="difficulty_levels" name="difficulty_levels">{{ rubric.difficulty_levels if rubric else '' }}</textarea>
+    </div>
+    <div class="form-group">
+      <label for="coverage">Coverage (JSON format)</label>
+      <textarea class="form-control" id="coverage" name="coverage">{{ rubric.coverage if rubric else '' }}</textarea>
+    </div>
+    <div class="form-group">
+      <label for="time_limit">Time Limit (minutes)</label>
+      <input type="number" class="form-control" id="time_limit" name="time_limit" value="{{ rubric.time_limit if rubric else '' }}">
+    </div>
+    <div class="form-check">
+      <input type="checkbox" class="form-check-input" id="randomization" name="randomization" {% if rubric and rubric.randomization %}checked{% endif %}>
+      <label class="form-check-label" for="randomization">Randomize Questions</label>
+    </div>
+    <div class="form-group mt-4">
+      <label for="course_id">Course</label>
+      <select class="form-control" id="course_id" name="course_id" required>
+        {% for course in courses %}
+        <option value="{{ course.id }}" {% if rubric and rubric.course_id == course.id %}selected{% endif %}>{{ course.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="text-center mt-4">
+      <button type="submit" class="btn btn-primary">{{ 'Update' if rubric else 'Create' }}</button>
+    </div>
+  </form>
 </div>
 {% endblock %}
