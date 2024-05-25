@@ -1,3 +1,4 @@
+import random
 from app import app
 from models import db, Course, CourseOutcome, Question
 
@@ -278,11 +279,15 @@ with app.app_context():
             db.session.add(new_outcome)
         db.session.commit()
     
+    n = len(courses)
     # Insert new questions
     for question in questions:
+        course_id=question["course_id"]
+        if course_id > n:
+            course_id = random.randint(1, n)
         new_question = Question(
             content=question["content"],
-            course_id=question["course_id"],
+            course_id=course_id,
             bloom_level=question["bloom_level"],
             topic=question["topic"],
             difficulty=question["difficulty"],

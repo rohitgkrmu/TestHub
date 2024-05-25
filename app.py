@@ -1,5 +1,6 @@
 import os
 from flask import Flask, render_template
+from flask_migrate import Migrate
 from models import db, Course, CourseOutcome, Question, User
 from routes.courses import course_bp
 from routes.questions import question_bp
@@ -13,6 +14,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'default_secret_key')  # Use environment variable or a default
 
 db.init_app(app)
+migrate = Migrate(app, db)
 
 login_manager = LoginManager()
 login_manager.login_view = 'auth.login'
