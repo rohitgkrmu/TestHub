@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+{% block title %}Create Question{% endblock %}
+{% block content %}
+<div class="container mt-4 d-flex justify-content-center">
+  <div class="w-50">
+    <h2 class="text-center">Create Question</h2>
+    <form method="POST">
+      <div class="form-group">
+        <label for="content">Question Content:</label>
+        <textarea class="form-control" id="content" name="content" required></textarea>
+      </div>
+      <div class="form-group">
+        <label for="course_id">Course:</label>
+        <select class="form-control" id="course_id" name="course_id" required>
+          {% for course in courses %}
+          <option value="{{ course.id }}">{{ course.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="bloom_level">Bloom's Taxonomy Level:</label>
+        <select class="form-control" id="bloom_level" name="bloom_level" required>
+          <option value="Remember">Remember</option>
+          <option value="Understand">Understand</option>
+          <option value="Apply">Apply</option>
+          <option value="Analyze">Analyze</option>
+          <option value="Evaluate">Evaluate</option>
+          <option value="Create">Create</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="topic">Topic:</label>
+        <input type="text" class="form-control" id="topic" name="topic">
+      </div>
+      <div class="form-group">
+        <label for="difficulty">Difficulty:</label>
+        <input type="text" class="form-control" id="difficulty" name="difficulty">
+      </div>
+      <div class="form-group">
+        <label for="question_type">Question Type:</label>
+        <select class="form-control" id="question_type" name="question_type" required onchange="updateQuestionType()">
+          <option value="Single Correct Answer">Single Correct Answer (MCQ)</option>
+          <option value="Multiple Correct Answers">Multiple Correct Answers (MCQ)</option>
+          <option value="True/False">True/False</option>
+          <option value="Matching">Matching</option>
+          <option value="Fill in the Blank">Fill in the Blank</option>
+          <option value="Short Answer">Short Answer</option>
+          <option value="Essay">Essay</option>
+        </select>
+      </div>
+      <div id="dynamic-inputs"></div>
+      <button type="submit" class="btn btn-primary btn-block">Create</button>
+    </form>
+  </div>
+</div>
+
+<script>
+function updateQuestionType() {
+  var questionType = document.getElementById('question_type').value;
+  var dynamicInputs = document.getElementById('dynamic-inputs');
+  dynamicInputs.innerHTML = '';
+
+  if (questionType === 'Single Correct Answer' || questionType === 'Multiple Correct Answers') {
+    dynamicInputs.innerHTML = `
+      <div class="form-group">
+        <label>Options:</label>
+        <div id="mcq-options">
+          <div class="input-group mb-2">
+            <input type="text" class="form-control" name="options[]" placeholder="Option" required>
+            <div class="input-group-append">
+              <button class="btn btn-danger remove-option" type="button">Remove</button>
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-secondary" id="add-option" type="button">Add Option</button>
+      </div>
+      <div class="form-group">
+        <label>Correct Answer:</label>
+        ${questionType === 'Single Correct Answer' ? `
+          <select class="form-control" name="correct_answer" required>
+            <option value="" disabled selected>Select Correct Answer</option>
+          </select>
+        ` : `
+          <input type="text" class="form-control" name="correct_answer" placeholder="Correct Answer(s), separated by commas" required>
+        `}
+      </div>`;
+    addOptionFunctionality();
+  } else if (questionType === 'True/False') {
+    dynamicInputs.innerHTML = `
+      <div class="form-group">
+        <label>Correct Answer:</label>
+        <select class="form-control" name="correct_answer" required>
+          <option value="True">True</option>
+          <option value="False">False</option>
+        </select>
+      </div>`;
+  } else if (questionType === 'Matching') {
+    dynamicInputs.innerHTML = `
+      <div class="form-group">
+        <label>Matching Pairs:</label>
+        <div id="matching-pairs">
+          <div class="input-group mb-2">
+            <input type="text" class="form-control" name="left[]" placeholder="Left Item" required>
+            <input type="text" class="form-control" name="right[]" placeholder="Right Item" required>
+            <div class="input-group-append">
+              <button class="btn btn-danger remove-pair" type="button">Remove</button>
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-secondary" id="add-pair" type="button">Add Pair</button>
+      </div>`;
+    addPairFunctionality();
+  } else if (questionType === 'Fill in the Blank') {
+    dynamicInputs.innerHTML = `
+      <div class="form-group">
+        <label>Correct Answer:</label>
+        <input type="text" class="form-control" name="correct_answer" required>
+      </div>`;
+  } else if (questionType === 'Short Answer') {
+    dynamicInputs.innerHTML = `
+      <div class="form-group">
+        <label>Correct Answer:</label>
+        <textarea class="form-control" name="correct_answer" required></textarea>
+      </div>`;
+  } else if (questionType === 'Essay') {
+    dynamicInputs.innerHTML = `
+      <div class="form-group">
+        <label>Essay Details:</label>
+        <textarea class="form-control" name="essay_details" required></textarea>
+      </div>`;
+  }
+}
+
+function addOptionFunctionality() {
+  document.getElementById('add-option').addEventListener('click', function() {
+    var container = document.getElementById('mcq-options');
+    var inputGroup = document.createElement('div');
+    inputGroup.className = 'input-group mb-2';
+    inputGroup.innerHTML = `
+      <input type="text" class="form-control" name="options[]" placeholder="Option" required>
+      <div class="input-group-append">
+        <button class="btn btn-danger remove-option" type="button">Remove</button>
+      </div>`;
+    container.appendChild(inputGroup);
+    updateCorrectAnswerOptions();
+  });
+
+  document.getElementById('mcq-options').addEventListener('click', function(event) {
+    if (event.target.classList.contains('remove-option')) {
+      event.target.closest('.input-group').remove();
+      updateCorrectAnswerOptions();
+    }
+  });
+}
+
+function updateCorrectAnswerOptions() {
+  var options = document.querySelectorAll('#mcq-options input');
+  var correctAnswerSelect = document.querySelector('select[name="correct_answer"]');
+  if (correctAnswerSelect) {
+    correctAnswerSelect.innerHTML = '<option value="" disabled selected>Select Correct Answer</option>';
+    options.forEach(function(option, index) {
+      var value = option.value.trim();
+      if (value) {
+        var optionElement = document.createElement('option');
+        optionElement.value = value;
+        optionElement.textContent = value;
+        correctAnswerSelect.appendChild(optionElement);
+      }
+    });
+  }
+}
+
+function addPairFunctionality() {
+  document.getElementById('add-pair').addEventListener('click', function() {
+    var container = document.getElementById('matching-pairs');
+    var inputGroup = document.createElement('div');
+    inputGroup.className = 'input-group mb-2';
+    inputGroup.innerHTML = `
+      <input type="text" class="form-control" name="left[]" placeholder="Left Item" required>
+      <input type="text" class="form-control" name="right[]" placeholder="Right Item" required>
+      <div class="input-group-append">
+        <button class="btn btn-danger remove-pair" type="button">Remove</button>
+      </div>`;
+    container.appendChild(inputGroup);
+  });
+
+  document.getElementById('matching-pairs').addEventListener('click', function(event) {
+    if (event.target.classList.contains('remove-pair')) {
+      event.target.closest('.input-group').remove();
+    }
+  });
+}
+</script>
+{% endblock %}

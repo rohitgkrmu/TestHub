@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}Question List{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <h2 class="text-center">Questions</h2>
+  <p class="text-center">Total Questions: {{ total_questions }}</p>
+  
+  <!-- Search, Sort, and Filter Form -->
+  <form method="GET" action="{{ url_for('questions.list_questions') }}" class="form-inline justify-content-center mb-4">
+    <input type="text" name="search" class="form-control mr-2" placeholder="Search">
+    <select name="bloom_level" class="form-control mr-2">
+      <option value="">All Bloom Levels</option>
+      {% for bloom_level in bloom_levels %}
+      <option value="{{ bloom_level[0] }}">{{ bloom_level[0] }}</option>
+      {% endfor %}
+    </select>
+    <select name="difficulty" class="form-control mr-2">
+      <option value="">All Difficulties</option>
+      {% for difficulty in difficulties %}
+      <option value="{{ difficulty[0] }}">{{ difficulty[0] }}</option>
+      {% endfor %}
+    </select>
+    <select name="question_type" class="form-control mr-2">
+      <option value="">All Question Types</option>
+      {% for question_type in question_types %}
+      <option value="{{ question_type[0] }}">{{ question_type[0] }}</option>
+      {% endfor %}
+    </select>
+    <select name="per_page" class="form-control mr-2">
+      <option value="10" {% if per_page == 10 %}selected{% endif %}>10</option>
+      <option value="50" {% if per_page == 50 %}selected{% endif %}>50</option>
+      <option value="100" {% if per_page == 100 %}selected{% endif %}>100</option>
+    </select>
+    <button type="submit" class="btn btn-primary">Apply</button>
+  </form>
+
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th scope="col"><a href="{{ url_for('questions.list_questions', sort_by='id', sort_order='asc') }}">#</a></th>
+        <th scope="col"><a href="{{ url_for('questions.list_questions', sort_by='content', sort_order='asc') }}">Content</a></th>
+        <th scope="col"><a href="{{ url_for('questions.list_questions', sort_by='course_id', sort_order='asc') }}">Course</a></th>
+        <th scope="col"><a href="{{ url_for('questions.list_questions', sort_by='bloom_level', sort_order='asc') }}">Bloom Level</a></th>
+        <th scope="col"><a href="{{ url_for('questions.list_questions', sort_by='topic', sort_order='asc') }}">Topic</a></th>
+        <th scope="col"><a href="{{ url_for('questions.list_questions', sort_by='difficulty', sort_order='asc') }}">Difficulty</a></th>
+        <th scope="col"><a href="{{ url_for('questions.list_questions', sort_by='question_type', sort_order='asc') }}">Question Type</a></th>
+        <th scope="col">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for question in questions %}
+      <tr>
+        <th scope="row">{{ loop.index }}</th>
+        <td>{{ question.content }}</td>
+        <td>{{ question.course.name }}</td>
+        <td>{{ question.bloom_level }}</td>
+        <td>{{ question.topic }}</td>
+        <td>{{ question.difficulty }}</td>
+        <td>{{ question.question_type }}</td>
+        <td>
+          <a href="{{ url_for('questions.view_question', question_id=question.id) }}" class="btn btn-info btn-sm">View</a>
+          <a href="{{ url_for('questions.edit_question', question_id=question.id) }}" class="btn btn-primary btn-sm">Edit</a>
+          <form action="{{ url_for('questions.delete_question', question_id=question.id) }}" method="post" style="display:inline;">
+            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  
+  <!-- Pagination Controls -->
+  <nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center">
+      {% for page_num in range(1, pagination.pages + 1) %}
+      <li class="page-item {% if page == page_num %}active{% endif %}">
+        <a class="page-link" href="{{ url_for('questions.list_questions', page=page_num, per_page=per_page) }}">{{ page_num }}</a>
+      </li>
+      {% endfor %}
+    </ul>
+  </nav>
+
+  <div class="text-center mt-4">
+    <a class="btn btn-primary btn-lg" href="{{ url_for('questions.create_question') }}" role="button">Add a New Question</a>
+  </div>
+</div>
+{% endblock %}

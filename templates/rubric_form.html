@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Create Rubric{% endblock %}
+{% block content %}
+<div class="container mt-4 d-flex justify-content-center">
+  <div class="w-50">
+    <h2 class="text-center">Create Rubric</h2>
+    <form method="POST">
+      <div class="form-group">
+        <label for="name">Rubric Name:</label>
+        <input type="text" class="form-control" id="name" name="name" required>
+      </div>
+      <div class="form-group">
+        <label for="course_id">Course:</label>
+        <select class="form-control" id="course_id" name="course_id" required>
+          {% for course in courses %}
+          <option value="{{ course.id }}">{{ course.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="blueprint">Blueprint (JSON):</label>
+        <textarea class="form-control" id="blueprint" name="blueprint" required></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">Create</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

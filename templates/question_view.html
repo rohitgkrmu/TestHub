@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Question Details{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">Question Details</h2>
+    <div>
+      {% if prev_question %}
+        <a class="btn btn-secondary" href="{{ url_for('questions.view_question', question_id=prev_question.id) }}" role="button">&#8592;</a>
+      {% endif %}
+      {% if next_question %}
+        <a class="btn btn-secondary" href="{{ url_for('questions.view_question', question_id=next_question.id) }}" role="button">&#8594;</a>
+      {% endif %}
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header">
+      <h4>{{ question.content }}</h4>
+    </div>
+    <div class="card-body">
+      <p><strong>Course:</strong> {{ course.name }}</p>
+      <p><strong>Bloom's Taxonomy Level:</strong> {{ question.bloom_level }}</p>
+      <p><strong>Topic:</strong> {{ question.topic }}</p>
+      <p><strong>Difficulty:</strong> {{ question.difficulty }}</p>
+      <p><strong>Question Type:</strong> {{ question.question_type }}</p>
+      
+      {% if question.question_type in ['Single Correct Answer', 'Multiple Correct Answers'] %}
+        <p><strong>Options:</strong></p>
+        <ul>
+          {% for option in question.options.split(',') %}
+          <li>{{ option }}</li>
+          {% endfor %}
+        </ul>
+        <p><strong>Correct Answer:</strong> {{ question.correct_answer }}</p>
+      {% elif question.question_type == 'True/False' %}
+        <p><strong>Correct Answer:</strong> {{ question.correct_answer }}</p>
+      {% elif question.question_type == 'Matching' %}
+        <p><strong>Pairs:</strong></p>
+        <ul>
+          {% for pair in question.pairs.split(',') %}
+          <li>{{ pair.split(':')[0] }} - {{ pair.split(':')[1] }}</li>
+          {% endfor %}
+        </ul>
+      {% elif question.question_type == 'Fill in the Blank' %}
+        <p><strong>Correct Answer:</strong> {{ question.correct_answer }}</p>
+      {% elif question.question_type == 'Short Answer' %}
+        <p><strong>Correct Answer:</strong> {{ question.correct_answer }}</p>
+      {% elif question.question_type == 'Essay' %}
+        <p><strong>Essay Details:</strong> {{ question.essay_details }}</p>
+      {% endif %}
+      
+      <p><strong>Created by:</strong> {{ question.created_by }} on {{ question.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+      {% if question.last_edited_by %}
+      <p><strong>Last edited by:</strong> {{ question.last_edited_by }} on {{ question.last_edited_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+      {% endif %}
+    </div>
+  </div>
+  <div class="text-center mt-4">
+    <a class="btn btn-primary" href="{{ url_for('questions.list_questions') }}" role="button">Back to Questions</a>
+  </div>
+</div>
+{% endblock %}

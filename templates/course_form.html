@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit Course' if edit else 'Create Course' }}{% endblock %}
+{% block content %}
+<div class="container mt-4 d-flex justify-content-center">
+  <div class="w-50">
+    <h2 class="text-center">{{ 'Edit Course' if edit else 'Create Course' }}</h2>
+    <form method="POST">
+      <div class="form-group">
+        <label for="name">Course Name:</label>
+        <input type="text" class="form-control" id="name" name="name" required value="{{ course.name if edit else '' }}">
+      </div>
+      <div class="form-group">
+        <label for="course_code">Course Code:</label>
+        <input type="text" class="form-control" id="course_code" name="course_code" required value="{{ course.course_code if edit else '' }}">
+      </div>
+      <div class="form-group">
+        <label for="school">School:</label>
+        <select class="form-control" id="school" name="school" required>
+          {% for school in schools %}
+          <option value="{{ school }}" {% if edit and course.school == school %}selected{% endif %}>{{ school }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="department">Department:</label>
+        <input type="text" class="form-control" id="department" name="department" required value="{{ course.department if edit else '' }}">
+      </div>
+      <div class="form-group">
+        <label for="outcomes">Course Outcomes:</label>
+        <div id="outcome-container">
+          {% if edit %}
+            {% for outcome in course.outcomes %}
+              <div class="input-group mb-2">
+                <input type="text" class="form-control" name="outcome" value="{{ outcome.description }}" required>
+                <div class="input-group-append">
+                  <button class="btn btn-danger remove-outcome" type="button">Remove</button>
+                </div>
+              </div>
+            {% endfor %}
+          {% else %}
+            <div class="input-group mb-2">
+              <input type="text" class="form-control" name="outcome" required>
+              <div class="input-group-append">
+                <button class="btn btn-danger remove-outcome" type="button">Remove</button>
+              </div>
+            </div>
+          {% endif %}
+        </div>
+        <button class="btn btn-secondary" id="add-outcome" type="button">Add Outcome</button>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">{{ 'Update' if edit else 'Create' }}</button>
+    </form>
+  </div>
+</div>
+<script>
+document.getElementById('add-outcome').addEventListener('click', function() {
+  var container = document.getElementById('outcome-container');
+  var inputGroup = document.createElement('div');
+  inputGroup.className = 'input-group mb-2';
+  inputGroup.innerHTML = `
+    <input type="text" class="form-control" name="outcome" required>
+    <div class="input-group-append">
+      <button class="btn btn-danger remove-outcome" type="button">Remove</button>
+    </div>`;
+  container.appendChild(inputGroup);
+});
+
+document.getElementById('outcome-container').addEventListener('click', function(event) {
+  if (event.target.classList.contains('remove-outcome')) {
+    event.target.closest('.input-group').remove();
+  }
+});
+</script>
+{% endblock %}
