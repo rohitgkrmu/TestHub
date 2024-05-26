@@ -2,24 +2,40 @@
 {% block title %}Rubric Details{% endblock %}
 {% block content %}
 <div class="container mt-4">
-  <h2 class="text-center">{{ rubric.name }}</h2>
-  <div class="card mb-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">Rubric Details</h2>
+    <div>
+      {% if prev_rubric %}
+        <a class="btn btn-secondary" href="{{ url_for('rubrics.view_rubric', rubric_id=prev_rubric.id) }}" role="button">&#8592;</a>
+      {% endif %}
+      {% if next_rubric %}
+        <a class="btn btn-secondary" href="{{ url_for('rubrics.view_rubric', rubric_id=next_rubric.id) }}" role="button">&#8594;</a>
+      {% endif %}
+    </div>
+  </div>
+  <div class="card">
     <div class="card-header">
-      <h4>Rubric Details</h4>
+      <h4>{{ rubric.name }}</h4>
     </div>
     <div class="card-body">
       <p><strong>Description:</strong> {{ rubric.description }}</p>
-      <p><strong>Course:</strong> {{ rubric.course.name }}</p>
-      <p><strong>Question Types:</strong></p>
-      <pre>{{ rubric.question_types }}</pre>
-      <p><strong>Sections:</strong></p>
-      <pre>{{ rubric.sections }}</pre>
-      <p><strong>Difficulty Levels:</strong></p>
-      <pre>{{ rubric.difficulty_levels }}</pre>
-      <p><strong>Coverage:</strong></p>
-      <pre>{{ rubric.coverage }}</pre>
-      <p><strong>Time Limit:</strong> {{ rubric.time_limit }} minutes</p>
-      <p><strong>Randomize Questions:</strong> {{ rubric.randomization }}</p>
+      
+      <h5>Sections</h5>
+      {% for section in sections %}
+      <div class="card mt-2">
+        <div class="card-header">
+          {{ section.name }}
+        </div>
+        <div class="card-body">
+          <p><strong>Single Answer MCQs:</strong> {{ section.single_mcq }}</p>
+          <p><strong>Multiple Answer MCQs:</strong> {{ section.multi_mcq }}</p>
+          <p><strong>True/False:</strong> {{ section.true_false }}</p>
+          <p><strong>Fill in the Blanks:</strong> {{ section.fill_blank }}</p>
+          <p><strong>Short Answer Essay:</strong> {{ section.short_essay }}</p>
+          <p><strong>Long Answer Essay:</strong> {{ section.long_essay }}</p>
+        </div>
+      </div>
+      {% endfor %}
     </div>
   </div>
   <div class="text-center mt-4">

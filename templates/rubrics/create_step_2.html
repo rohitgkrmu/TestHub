@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Create Rubric - Step 2{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Create Rubric - Step 2: Define Sections</h2>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        {% for section_form in form.sections %}
+        <div class="card mt-2">
+            <div class="card-header">
+                Section {{ loop.index }}
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    {{ section_form.name.label }} {{ section_form.name(class_="form-control") }}
+                </div>
+                <div class="form-group">
+                    {{ section_form.single_mcq.label }} {{ section_form.single_mcq(class_="form-control") }}
+                </div>
+                <div class="form-group">
+                    {{ section_form.multi_mcq.label }} {{ section_form.multi_mcq(class_="form-control") }}
+                </div>
+                <div class="form-group">
+                    {{ section_form.true_false.label }} {{ section_form.true_false(class_="form-control") }}
+                </div>
+                <div class="form-group">
+                    {{ section_form.fill_blank.label }} {{ section_form.fill_blank(class_="form-control") }}
+                </div>
+                <div class="form-group">
+                    {{ section_form.short_essay.label }} {{ section_form.short_essay(class_="form-control") }}
+                </div>
+                <div class="form-group">
+                    {{ section_form.long_essay.label }} {{ section_form.long_essay(class_="form-control") }}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary mt-3">Next</button>
+    </form>
+</div>
+{% endblock %}
