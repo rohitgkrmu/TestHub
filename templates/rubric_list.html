@@ -55,7 +55,7 @@
   </nav>
 
   <div class="text-center mt-4">
-    <a class="btn btn-primary btn-lg" href="{{ url_for('rubrics.create_rubric') }}" role="button">Create a New Rubric</a>
+    <a class="btn btn-primary btn-lg" href="{{ url_for('rubrics.create_rubric', reset=1) }}" role="button">Create a New Rubric</a>
   </div>
 </div>
 {% endblock %}

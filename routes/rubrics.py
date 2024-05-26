@@ -8,47 +8,40 @@ rubric_bp = Blueprint('rubrics', __name__)
 
 @rubric_bp.route('/create', methods=['GET', 'POST'])
 def create_rubric():
-
-    if 'step' not in session:
-        print("step is now 1")
+    # Initialize or reset session step
+    if 'step' not in session or (request.method == 'GET' and 'reset' in request.args):
         session['step'] = 1
         session['rubric_data'] = {}
 
     step = session['step']
     rubric_data = session['rubric_data']
 
+    # Handle Step 1
     if step == 1:
+        print("####DEBUGGING MODE#######")
+        print("####Entering Step 1######")
         form = RubricBasicForm()
-        print("############################")
-        print(form)
-        print("############################")
         if form.validate_on_submit():
             rubric_data['name'] = form.name.data
             rubric_data['description'] = form.description.data
-            session['step'] = 2
             session['rubric_data'] = rubric_data
+            session['step'] = 2
             return redirect(url_for('rubrics.create_rubric'))
+        return render_template('rubrics/create_step_1.html', form=form)
 
+    # Handle Step 2
     elif step == 2:
+        print("####DEBUGGING MODE#######")
+        print("####Entering Step 2######")
         form = RubricSectionsForm()
         if form.validate_on_submit():
-            sections = []
-            for section_form in form.sections:
-                section = {
-                    'name': section_form.name.data,
-                    'single_mcq': section_form.single_mcq.data,
-                    'multi_mcq': section_form.multi_mcq.data,
-                    'true_false': section_form.true_false.data,
-                    'fill_blank': section_form.fill_blank.data,
-                    'short_essay': section_form.short_essay.data,
-                    'long_essay': section_form.long_essay.data
-                }
-                sections.append(section)
-            rubric_data['sections'] = sections
-            session['step'] = 3
+            rubric_data['sections'] = form.sections.data
             session['rubric_data'] = rubric_data
+            session['step'] = 3
             return redirect(url_for('rubrics.create_rubric'))
+        return render_template('rubrics/create_step_2.html', form=form)
 
+    # Handle Step 3 (Final Step)
     elif step == 3:
         rubric = Rubric(
             name=rubric_data['name'],
@@ -57,13 +50,13 @@ def create_rubric():
         )
         db.session.add(rubric)
         db.session.commit()
-        session.pop('step')
-        session.pop('rubric_data')
         flash('Rubric created successfully!', 'success')
+        session.pop('step', None)
+        session.pop('rubric_data', None)
         return redirect(url_for('rubrics.list_rubrics'))
 
-    form = form if 'form' in locals() else None
-    return render_template(f'rubrics/create_step_{step}.html', form=form)
+    # Default: should not reach here
+    return redirect(url_for('rubrics.create_rubric'))
 
 @rubric_bp.route('/', methods=['GET', 'POST'], endpoint='list_rubrics')
 def list_rubrics():
