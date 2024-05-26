@@ -8,10 +8,18 @@ rubric_bp = Blueprint('rubrics', __name__)
 
 @rubric_bp.route('/create', methods=['GET', 'POST'])
 def create_rubric():
+    print("####DEBUGGING MODE#######")
+    print(f"####Before any change: step is {session.get('step', 'not set')}######")
+
+    # Print request arguments to debug the issue
+    print(f"####Request args: {request.args}######")
+
     # Initialize or reset session step
     if 'step' not in session or (request.method == 'GET' and 'reset' in request.args):
         session['step'] = 1
         session['rubric_data'] = {}
+
+    print(f"####After the first if statement, step is {session['step']}, request is {request.method} and args is {request.args}######")
 
     step = session['step']
     rubric_data = session['rubric_data']
@@ -26,7 +34,9 @@ def create_rubric():
             rubric_data['description'] = form.description.data
             session['rubric_data'] = rubric_data
             session['step'] = 2
+            print("####Step 1 form validated and session updated######")
             return redirect(url_for('rubrics.create_rubric'))
+        print("####Step 1 form rendering######")
         return render_template('rubrics/create_step_1.html', form=form)
 
     # Handle Step 2
@@ -34,11 +44,18 @@ def create_rubric():
         print("####DEBUGGING MODE#######")
         print("####Entering Step 2######")
         form = RubricSectionsForm()
+        # Debugging: print form fields to check types
+        for field in form.sections:
+            print(f"Field: {field}, Type: {type(field)}")
+            print(f"Field name: {field.name}, Field name type: {type(field.name)}")
+
         if form.validate_on_submit():
             rubric_data['sections'] = form.sections.data
             session['rubric_data'] = rubric_data
             session['step'] = 3
+            print("####Step 2 form validated and session updated######")
             return redirect(url_for('rubrics.create_rubric'))
+        print("####Step 2 form rendering######")
         return render_template('rubrics/create_step_2.html', form=form)
 
     # Handle Step 3 (Final Step)
@@ -53,9 +70,11 @@ def create_rubric():
         flash('Rubric created successfully!', 'success')
         session.pop('step', None)
         session.pop('rubric_data', None)
+        print("####Rubric creation completed and session cleared######")
         return redirect(url_for('rubrics.list_rubrics'))
 
     # Default: should not reach here
+    print("####Default case reached, should not happen######")
     return redirect(url_for('rubrics.create_rubric'))
 
 @rubric_bp.route('/', methods=['GET', 'POST'], endpoint='list_rubrics')
