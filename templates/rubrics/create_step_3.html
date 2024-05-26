@@ -1,34 +1,48 @@
 {% extends "base.html" %}
-{% block title %}Create Rubric - Review{% endblock %}
+{% block title %}Create Rubric - Step 3{% endblock %}
 {% block content %}
 <div class="container mt-4">
-    <h2>Create Rubric - Step 3: Review and Confirm</h2>
+    <h2>Create Rubric - Step 3: Define Sections</h2>
     <form method="POST">
         {{ form.hidden_tag() }}
-        <div class="form-group">
-            <h4>Basic Information</h4>
-            <p><strong>Name:</strong> {{ rubric_data.name }}</p>
-            <p><strong>Description:</strong> {{ rubric_data.description }}</p>
-        </div>
-        <div class="form-group">
-            <h4>Sections</h4>
-            {% for section in rubric_data.sections %}
-            <div class="card mt-2">
-                <div class="card-header">
-                    {{ section.name }}
+        {% for section_form in form.sections %}
+        <div class="card mt-2">
+            <div class="card-header">
+                Section {{ loop.index }}
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    {{ section_form.name.label }} 
+                    {{ section_form.name(class_="form-control") }}
                 </div>
-                <div class="card-body">
-                    <p><strong>Single Answer MCQs:</strong> {{ section.single_mcq }}</p>
-                    <p><strong>Multiple Answer MCQs:</strong> {{ section.multi_mcq }}</p>
-                    <p><strong>True/False:</strong> {{ section.true_false }}</p>
-                    <p><strong>Fill in the Blanks:</strong> {{ section.fill_blank }}</p>
-                    <p><strong>Short Answer Essay:</strong> {{ section.short_essay }}</p>
-                    <p><strong>Long Answer Essay:</strong> {{ section.long_essay }}</p>
+                <div class="form-group">
+                    {{ section_form.single_mcq.label }} 
+                    {{ section_form.single_mcq(class_="form-control") }}
+                </div>
+                <div class="form-group">
+                    {{ section_form.multi_mcq.label }} 
+                    {{ section_form.multi_mcq(class_="form-control") }}
+                </div>
+                <div class="form-group">
+                    {{ section_form.true_false.label }} 
+                    {{ section_form.true_false(class_="form-control") }}
+                </div>
+                <div class="form-group">
+                    {{ section_form.fill_blank.label }} 
+                    {{ section_form.fill_blank(class_="form-control") }}
+                </div>
+                <div class="form-group">
+                    {{ section_form.short_essay.label }} 
+                    {{ section_form.short_essay(class_="form-control") }}
+                </div>
+                <div class="form-group">
+                    {{ section_form.long_essay.label }} 
+                    {{ section_form.long_essay(class_="form-control") }}
                 </div>
             </div>
-            {% endfor %}
         </div>
-        <button type="submit" class="btn btn-primary mt-3">Create Rubric</button>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary mt-3">Next</button>
     </form>
 </div>
 {% endblock %}

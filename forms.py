@@ -15,10 +15,8 @@ class RubricBasicForm(FlaskForm):
     name = StringField('Rubric Name', validators=[DataRequired()])
     description = TextAreaField('Description', validators=[Optional()])
 
+class NumberOfSectionsForm(FlaskForm):
+    number_of_sections = IntegerField('Number of Sections', validators=[DataRequired()])
+
 class RubricSectionsForm(FlaskForm):
     sections = FieldList(FormField(SectionForm), min_entries=1, max_entries=10)
-
-class RubricWizardForm(FlaskForm):
-    basic_info = FormField(RubricBasicForm)
-    sections_info = FormField(RubricSectionsForm)
-    submit = SubmitField('Create Rubric')

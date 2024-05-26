@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Create Rubric - Review{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Create Rubric - Step 4: Review and Confirm</h2>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+            <h4>Basic Information</h4>
+            <p><strong>Name:</strong> {{ rubric_data.name }}</p>
+            <p><strong>Description:</strong> {{ rubric_data.description }}</p>
+        </div>
+        <div class="form-group">
+            <h4>Sections</h4>
+            {% for section in rubric_data.sections %}
+            <div class="card mt-2">
+                <div class="card-header">
+                    {{ section.name }}
+                </div>
+                <div class="card-body">
+                    <p><strong>Single Answer MCQs:</strong> {{ section.single_mcq }}</p>
+                    <p><strong>Multiple Answer MCQs:</strong> {{ section.multi_mcq }}</p>
+                    <p><strong>True/False:</strong> {{ section.true_false }}</p>
+                    <p><strong>Fill in the Blanks:</strong> {{ section.fill_blank }}</p>
+                    <p><strong>Short Answer Essay:</strong> {{ section.short_essay }}</p>
+                    <p><strong>Long Answer Essay:</strong> {{ section.long_essay }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Create Rubric</button>
+    </form>
+</div>
+{% endblock %}
