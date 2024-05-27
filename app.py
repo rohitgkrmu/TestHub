@@ -1,6 +1,7 @@
 # File: app.py
 import os
 from flask import Flask, render_template
+from flask_wtf import CSRFProtect
 from flask_migrate import Migrate
 from flask_login import LoginManager, login_required, current_user
 from models import db, User
@@ -12,6 +13,7 @@ from routes.auth import auth_bp
 def create_app():
     app = Flask(__name__)
     app.config.from_object('config.Config')
+    csrf = CSRFProtect(app)
 
     initialize_extensions(app)
     register_blueprints(app)

@@ -3,7 +3,7 @@ from wtforms import StringField, TextAreaField, IntegerField, FieldList, FormFie
 from wtforms.validators import DataRequired, Optional
 
 class SectionForm(FlaskForm):
-    name = StringField('Section Name', validators=[DataRequired()])
+    section_name = StringField('Section Name', validators=[DataRequired()])
     single_mcq = IntegerField('Single Answer MCQs', default=0)
     multi_mcq = IntegerField('Multiple Answer MCQs', default=0)
     true_false = IntegerField('True/False', default=0)
@@ -19,4 +19,7 @@ class NumberOfSectionsForm(FlaskForm):
     number_of_sections = IntegerField('Number of Sections', validators=[DataRequired()])
 
 class RubricSectionsForm(FlaskForm):
-    sections = FieldList(FormField(SectionForm), min_entries=1, max_entries=10)
+    sections = FieldList(FormField(SectionForm), min_entries=1)
+
+class EmptyForm(FlaskForm):
+    pass

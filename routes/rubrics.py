@@ -1,6 +1,6 @@
 from flask import Blueprint, request, render_template, redirect, url_for, flash, session
 from models import db, Rubric
-from forms import SectionForm, RubricBasicForm, RubricSectionsForm, NumberOfSectionsForm
+from forms import SectionForm, RubricBasicForm, RubricSectionsForm, NumberOfSectionsForm, EmptyForm
 from utils import apply_filters, apply_sorting, apply_pagination
 import json
 
@@ -8,7 +8,6 @@ rubric_bp = Blueprint('rubrics', __name__)
 
 @rubric_bp.route('/create', methods=['GET', 'POST'])
 def create_rubric():
-    # Initialize or reset session step
     if 'step' not in session or (request.method == 'GET' and 'reset' in request.args):
         session['step'] = 1
         session['rubric_data'] = {}
@@ -16,7 +15,6 @@ def create_rubric():
     step = session['step']
     rubric_data = session['rubric_data']
 
-    # Handle Step 1: Basic Information
     if step == 1:
         form = RubricBasicForm()
         if form.validate_on_submit():
@@ -27,10 +25,8 @@ def create_rubric():
             return redirect(url_for('rubrics.create_rubric'))
         return render_template('rubrics/create_step_1.html', form=form)
 
-    # Handle Step 2: Number of Sections
     elif step == 2:
         form = NumberOfSectionsForm()
-        print(f"Step 2 form type: {type(form)}")
         if form.validate_on_submit():
             rubric_data['number_of_sections'] = form.number_of_sections.data
             session['rubric_data'] = rubric_data
@@ -38,20 +34,21 @@ def create_rubric():
             return redirect(url_for('rubrics.create_rubric'))
         return render_template('rubrics/create_step_2.html', form=form)
 
-    # Handle Step 3: Section Details
     elif step == 3:
         form = RubricSectionsForm()
-        form.sections.entries = [SectionForm() for _ in range(rubric_data['number_of_sections'])]
-        print(f"Step 3 form type: {type(form)}")
+        for _ in range(rubric_data['number_of_sections'] - len(form.sections.entries)):
+            form.sections.append_entry()
+
         if form.validate_on_submit():
-            rubric_data['sections'] = form.sections.data
+            rubric_data['sections'] = [section.data for section in form.sections]
             session['rubric_data'] = rubric_data
             session['step'] = 4
             return redirect(url_for('rubrics.create_rubric'))
+
         return render_template('rubrics/create_step_3.html', form=form, rubric_data=rubric_data)
 
-    # Handle Step 4: Review and Confirm
     elif step == 4:
+        form = EmptyForm()
         if request.method == 'POST':
             rubric = Rubric(
                 name=rubric_data['name'],
@@ -64,9 +61,8 @@ def create_rubric():
             session.pop('step', None)
             session.pop('rubric_data', None)
             return redirect(url_for('rubrics.list_rubrics'))
-        return render_template('rubrics/create_step_4.html')
+        return render_template('rubrics/create_step_4.html', form=form, rubric_data=rubric_data)
 
-    # Default: should not reach here
     return redirect(url_for('rubrics.create_rubric'))
 
 @rubric_bp.route('/', methods=['GET', 'POST'], endpoint='list_rubrics')
