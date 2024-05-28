@@ -1,8 +1,9 @@
-from flask import Blueprint, request, render_template, redirect, url_for, flash
+from flask import Blueprint, request, render_template, redirect, url_for, flash, session
 from models import db, Test, Course, Rubric, Question
 from forms import TestCreationForm
 from utils import apply_filters, apply_sorting, apply_pagination
 import json
+import random
 
 test_bp = Blueprint('tests', __name__)
 
@@ -33,30 +34,40 @@ def create_test():
             "long_essay": []
         }
 
+        # Mapping of question type values to question_pool keys
+        question_type_mapping = {
+            "Single Correct Answer": "single_mcq",
+            "Multiple Correct Answers": "multi_mcq",
+            "True/False": "true_false",
+            "Fill in the Blank": "fill_blank",
+            "Short Answer": "short_essay",
+            "Essay": "long_essay"
+        }
+
         for question in questions:
-            if question.question_type in question_pool:
-                question_pool[question.question_type].append(question)
+            question_type_key = question_type_mapping.get(question.question_type)
+            if question_type_key and question_type_key in question_pool:
+                question_pool[question_type_key].append(question)
 
         sufficient_questions = True
         missing_questions = []
 
         for section in rubric_requirements:
-            section_questions = []
             for q_type, required_count in section.items():
-                if q_type == 'csrf_token':  # skip CSRF token
+                if q_type in ['csrf_token', 'section_name']:  # skip CSRF token
                     continue
                 available_questions = question_pool.get(q_type, [])
                 if len(available_questions) < required_count:
                     sufficient_questions = False
                     missing_questions.append(f"{required_count - len(available_questions)} more {q_type.replace('_', ' ')} questions")
                 else:
-                    section_questions.extend(available_questions[:required_count])
-                    question_pool[q_type] = available_questions[required_count:]
-            selected_questions.extend(section_questions)
+                    selected_questions.extend(random.sample(available_questions, required_count))
+                    question_pool[q_type] = [q for q in available_questions if q not in selected_questions]
 
         if not sufficient_questions:
-            flash(f"Not enough questions to create the test. Please add more questions: {', '.join(missing_questions)}", 'danger')
-            return redirect(url_for('tests.create_test'))
+            print("#### THE NUMBER OF QUESTIONS ARE NOT SUFFICIENT####")
+            error_message = f"Not enough questions to create the test. Please add more questions: {', '.join(missing_questions)}"
+            return render_template("error.html", error_message = error_message)
 
         test = Test(name=name, course_id=course_id, rubric_id=rubric_id, questions=json.dumps([q.to_dict() for q in selected_questions]))
         db.session.add(test)
@@ -65,7 +76,8 @@ def create_test():
         flash('Test created successfully!', 'success')
         return redirect(url_for('tests.view_test', test_id=test.id))
     
-    return render_template('test_form.html', form=form)
+    error_message = session.pop('error_message', None)
+    return render_template('test_form.html', form=form, error_message=error_message)
 
 @test_bp.route('/view/<int:test_id>', methods=['GET'])
 def view_test(test_id):

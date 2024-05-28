@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Error{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <div class="alert alert-danger" role="alert">
+        <h4 class="alert-heading">Error</h4>
+        <p>{{ error_message }}</p>
+        <hr>
+        <a href="{{ url_for('tests.create_test') }}" class="btn btn-primary">Back to Create Test</a>
+    </div>
+</div>
+{% endblock %}

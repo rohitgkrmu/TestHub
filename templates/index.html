@@ -2,12 +2,12 @@
 {% block title %}Home{% endblock %}
 {% block content %}
 <div class="jumbotron text-center">
-  <h1 class="display-4">Welcome to the TestHub!</h1>
-  <p class="lead">This is a tool to help manage courses, questions, and rubrics.</p>
+  <h1 class="display-4">Welcome to TestHub!</h1>
+  <p class="lead">This is a tool to help manage courses, questions, rubrics and tests.</p>
   <hr class="my-4">
-  <p>Use the navigation bar to access different sections of the application.</p>
+  <p>Use the navigation bar on top to access different sections of the application.</p>
   <a class="btn btn-primary btn-lg" href="{{ url_for('courses.create_course') }}" role="button">Create a Course</a>
-  <a class="btn btn-primary btn-lg" href="{{ url_for('questions.create_question') }}" role="button">Add a Question</a>
+  <a class="btn btn-primary btn-lg" href="{{ url_for('questions.create_question') }}" role="button">Create a Question</a>
   <a class="btn btn-primary btn-lg" href="{{ url_for('rubrics.create_rubric') }}" role="button">Create a Rubric</a>
   <a class="btn btn-primary btn-lg" href="{{ url_for('tests.create_test') }}" role="button">Create a Test</a>
 </div>
