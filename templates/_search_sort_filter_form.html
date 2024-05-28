@@ -1,0 +1,19 @@
+<form method="GET" action="{{ url }}" class="form-inline justify-content-center mb-4">
+  <input type="text" name="search" class="form-control mr-2" placeholder="Search">
+  {% if filter_options %}
+    {% for filter in filter_options %}
+      <select name="{{ filter.name }}" class="form-control mr-2">
+        <option value="">{{ filter.default }}</option>
+        {% for option in filter.options %}
+          <option value="{{ option }}" {% if filter.selected == option %}selected{% endif %}>{{ option }}</option>
+        {% endfor %}
+      </select>
+    {% endfor %}
+  {% endif %}
+  <select name="per_page" class="form-control mr-2">
+    <option value="10" {% if per_page == 10 %}selected{% endif %}>10</option>
+    <option value="50" {% if per_page == 50 %}selected{% endif %}>50</option>
+    <option value="100" {% if per_page == 100 %}selected{% endif %}>100</option>
+  </select>
+  <button type="submit" class="btn btn-primary">Apply</button>
+</form>

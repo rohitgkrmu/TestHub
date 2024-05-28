@@ -5,35 +5,10 @@
   <h2 class="text-center">Questions</h2>
   <p class="text-center">Total Questions: {{ total_questions }}</p>
   
-  <!-- Search, Sort, and Filter Form -->
-  <form method="GET" action="{{ url_for('questions.list_questions') }}" class="form-inline justify-content-center mb-4">
-    <input type="text" name="search" class="form-control mr-2" placeholder="Search">
-    <select name="bloom_level" class="form-control mr-2">
-      <option value="">All Bloom Levels</option>
-      {% for bloom_level in bloom_levels %}
-      <option value="{{ bloom_level[0] }}">{{ bloom_level[0] }}</option>
-      {% endfor %}
-    </select>
-    <select name="difficulty" class="form-control mr-2">
-      <option value="">All Difficulties</option>
-      {% for difficulty in difficulties %}
-      <option value="{{ difficulty[0] }}">{{ difficulty[0] }}</option>
-      {% endfor %}
-    </select>
-    <select name="question_type" class="form-control mr-2">
-      <option value="">All Question Types</option>
-      {% for question_type in question_types %}
-      <option value="{{ question_type[0] }}">{{ question_type[0] }}</option>
-      {% endfor %}
-    </select>
-    <select name="per_page" class="form-control mr-2">
-      <option value="10" {% if per_page == 10 %}selected{% endif %}>10</option>
-      <option value="50" {% if per_page == 50 %}selected{% endif %}>50</option>
-      <option value="100" {% if per_page == 100 %}selected{% endif %}>100</option>
-    </select>
-    <button type="submit" class="btn btn-primary">Apply</button>
-  </form>
-
+  {% with url=url_for('questions.list_questions'), filter_options=filter_options, per_page=per_page %}
+    {% include '_search_sort_filter_form.html' %}
+  {% endwith %}
+  
   <table class="table table-striped">
     <thead>
       <tr>
@@ -68,18 +43,11 @@
       {% endfor %}
     </tbody>
   </table>
-  
-  <!-- Pagination Controls -->
-  <nav aria-label="Page navigation">
-    <ul class="pagination justify-content-center">
-      {% for page_num in range(1, pagination.pages + 1) %}
-      <li class="page-item {% if page == page_num %}active{% endif %}">
-        <a class="page-link" href="{{ url_for('questions.list_questions', page=page_num, per_page=per_page) }}">{{ page_num }}</a>
-      </li>
-      {% endfor %}
-    </ul>
-  </nav>
 
+  {% with pagination=pagination, pagination_endpoint='questions.list_questions', per_page=per_page %}
+    {% include '_pagination_controls.html' %}
+  {% endwith %}
+  
   <div class="text-center mt-4">
     <a class="btn btn-primary btn-lg" href="{{ url_for('questions.create_question') }}" role="button">Add a New Question</a>
   </div>
