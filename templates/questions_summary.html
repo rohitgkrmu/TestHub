@@ -1,0 +1,64 @@
+<!-- questions_summary.html -->
+<div class="text-center mt-4">
+  <h3>Questions Summary</h3>
+  <p>Total Questions: {{ total_questions }}</p>
+  <div class="row">
+    <div class="col-md-4">
+      <h5>Difficulty Levels</h5>
+      <table class="table table-bordered table-sm">
+        <thead>
+          <tr>
+            <th>Difficulty</th>
+            <th>Count</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for difficulty, count in difficulty_data.items() %}
+          <tr style="height: 30px;">
+            <td>{{ difficulty }}</td>
+            <td>{{ count }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="col-md-4">
+      <h5>Topics</h5>
+      <table class="table table-bordered table-sm">
+        <thead>
+          <tr>
+            <th>Topic</th>
+            <th>Count</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for topic, count in topic_data.items() %}
+          <tr style="height: 30px;">
+            <td>{{ topic }}</td>
+            <td>{{ count }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="col-md-4">
+      <h5>Question Types</h5>
+      <table class="table table-bordered table-sm">
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Count</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for question_type, count in type_data.items() %}
+          <tr style="height: 30px;">
+            <td>{{ question_type }}</td>
+            <td>{{ count }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

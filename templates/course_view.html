@@ -1,3 +1,4 @@
+<!-- course_view.html -->
 {% extends "base.html" %}
 {% block title %}Course Details{% endblock %}
 {% block content %}
@@ -31,127 +32,20 @@
     </div>
   </div>
 
-  <div class="text-center mt-4">
-    <h3>Questions Summary</h3>
-    <p>Total Questions: {{ total_questions }}</p>
-    <div class="row">
-      <div class="col-md-4">
-        <h5>Difficulty Levels</h5>
-        <table class="table table-bordered table-sm">
-          <thead>
-            <tr>
-              <th>Difficulty</th>
-              <th>Count</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for difficulty, count in difficulty_data.items() %}
-            <tr style="height: 30px;">
-              <td>{{ difficulty }}</td>
-              <td>{{ count }}</td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-      <div class="col-md-4">
-        <h5>Topics</h5>
-        <table class="table table-bordered table-sm">
-          <thead>
-            <tr>
-              <th>Topic</th>
-              <th>Count</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for topic, count in topic_data.items() %}
-            <tr style="height: 30px;">
-              <td>{{ topic }}</td>
-              <td>{{ count }}</td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-      <div class="col-md-4">
-        <h5>Question Types</h5>
-        <table class="table table-bordered table-sm">
-          <thead>
-            <tr>
-              <th>Type</th>
-              <th>Count</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for question_type, count in type_data.items() %}
-            <tr style="height: 30px;">
-              <td>{{ question_type }}</td>
-              <td>{{ count }}</td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
+  {% with total_questions=total_questions, difficulty_data=difficulty_data, topic_data=topic_data, type_data=type_data %}
+    {% include 'questions_summary.html' %}
+  {% endwith %}
 
   <div class="text-center mt-4">
     <h3>Questions</h3>
-    <form method="get" action="{{ url_for('courses.view_course', course_id=course.id) }}">
-      <div class="form-row">
-        <div class="col">
-          <input type="text" class="form-control" name="search" placeholder="Search" value="{{ search_query }}">
-        </div>
-        <div class="col">
-          <select class="form-control" name="difficulty">
-            <option value="">Difficulty</option>
-            <option value="Easy" {% if difficulty == 'Easy' %}selected{% endif %}>Easy</option>
-            <option value="Medium" {% if difficulty == 'Medium' %}selected{% endif %}>Medium</option>
-            <option value="Hard" {% if difficulty == 'Hard' %}selected{% endif %}>Hard</option>
-          </select>
-        </div>
-        <div class="col">
-          <select class="form-control" name="topic">
-            <option value="">Topic</option>
-            {% for topic, count in topic_data.items() %}
-            <option value="{{ topic }}" {% if topic == topic %}selected{% endif %}>{{ topic }}</option>
-            {% endfor %}
-          </select>
-        </div>
-        <div class="col">
-          <select class="form-control" name="question_type">
-            <option value="">Question Type</option>
-            {% for question_type, count in type_data.items() %}
-            <option value="{{ question_type }}" {% if question_type == question_type %}selected{% endif %}>{{ question_type }}</option>
-            {% endfor %}
-          </select>
-        </div>
-        <div class="col">
-          <button type="submit" class="btn btn-primary">Filter</button>
-        </div>
-      </div>
-    </form>
+    {% with url=url_for('courses.view_course', course_id=course.id), filter_options=[
+      {'name': 'difficulty', 'default': 'Difficulty', 'options': ['Easy', 'Medium', 'Hard'], 'selected': difficulty},
+      {'name': 'topic', 'default': 'Topic', 'options': topic_data.keys(), 'selected': topic},
+      {'name': 'question_type', 'default': 'Question Type', 'options': type_data.keys(), 'selected': question_type}
+    ] %}
+      {% include '_search_sort_filter_form.html' %}
+    {% endwith %}
   </div>
-
-  <div class="text-center mt-3">
-    <a class="btn btn-primary btn-lg mb-2" href="{{ url_for('questions.create_question') }}" role="button">Add a New Question</a>
-  </div>
-
-  <nav aria-label="Page navigation" class="mt-3">
-    <ul class="pagination justify-content-center">
-      <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
-        <a class="page-link" href="{{ url_for('courses.view_course', course_id=course.id, page=pagination.prev_num, search=search_query, sort_by=sort_by, sort_order=sort_order, difficulty=difficulty, topic=topic, question_type=question_type) }}">Previous</a>
-      </li>
-      {% for page_num in pagination.iter_pages() %}
-      <li class="page-item {% if page_num == pagination.page %}active{% endif %}">
-        <a class="page-link" href="{{ url_for('courses.view_course', course_id=course.id, page=page_num, search=search_query, sort_by=sort_by, sort_order=sort_order, difficulty=difficulty, topic=topic, question_type=question_type) }}">{{ page_num }}</a>
-      </li>
-      {% endfor %}
-      <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
-        <a class="page-link" href="{{ url_for('courses.view_course', course_id=course.id, page=pagination.next_num, search=search_query, sort_by=sort_by, sort_order=sort_order, difficulty=difficulty, topic=topic, question_type=question_type) }}">Next</a>
-      </li>
-    </ul>
-  </nav>
 
   <div class="table-responsive mt-3">
     <table class="table table-striped text-center table-sm">
@@ -185,22 +79,10 @@
     </table>
   </div>
 
-  <nav aria-label="Page navigation" class="mt-3">
-    <ul class="pagination justify-content-center">
-      <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
-        <a class="page-link" href="{{ url_for('courses.view_course', course_id=course.id, page=pagination.prev_num, search=search_query, sort_by=sort_by, sort_order=sort_order, difficulty=difficulty, topic=topic, question_type=question_type) }}">Previous</a>
-      </li>
-      {% for page_num in pagination.iter_pages() %}
-      <li class="page-item {% if page_num == pagination.page %}active{% endif %}">
-        <a class="page-link" href="{{ url_for('courses.view_course', course_id=course.id, page=page_num, search=search_query, sort_by=sort_by, sort_order=sort_order, difficulty=difficulty, topic=topic, question_type=question_type) }}">{{ page_num }}</a>
-      </li>
-      {% endfor %}
-      <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
-        <a class="page-link" href="{{ url_for('courses.view_course', course_id=course.id, page=pagination.next_num, search=search_query, sort_by=sort_by, sort_order=sort_order, difficulty=difficulty, topic=topic, question_type=question_type) }}">Next</a>
-      </li>
-    </ul>
-  </nav>
-
+  {% with pagination=pagination, pagination_endpoint='courses.view_course', per_page=per_page, course_id=course.id %}
+    {% include '_pagination_controls.html' %}
+  {% endwith %}
+  
   <div class="text-center mt-3">
     <a class="btn btn-primary btn-lg mb-2" href="{{ url_for('questions.create_question') }}" role="button">Add a New Question</a>
   </div>

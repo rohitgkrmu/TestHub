@@ -1,8 +1,13 @@
+<!-- _pagination_controls.html -->
 <nav aria-label="Page navigation">
   <ul class="pagination justify-content-center">
     {% for page_num in range(1, pagination.pages + 1) %}
       <li class="page-item {% if page == page_num %}active{% endif %}">
-        <a class="page-link" href="{{ url_for(pagination_endpoint, page=page_num, per_page=per_page) }}">{{ page_num }}</a>
+        {% if course is defined %}
+          <a class="page-link" href="{{ url_for(pagination_endpoint, page=page_num, per_page=per_page, course_id=course.id) }}">{{ page_num }}</a>
+        {% else %}
+          <a class="page-link" href="{{ url_for(pagination_endpoint, page=page_num, per_page=per_page) }}">{{ page_num }}</a>
+        {% endif %}
       </li>
     {% endfor %}
   </ul>
