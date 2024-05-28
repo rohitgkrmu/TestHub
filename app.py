@@ -8,12 +8,13 @@ from models import db, User
 from routes.courses import course_bp
 from routes.questions import question_bp
 from routes.rubrics import rubric_bp
+from routes.tests import test_bp
 from routes.auth import auth_bp
 
 def create_app():
     app = Flask(__name__)
     app.config.from_object('config.Config')
-    csrf = CSRFProtect(app)
+    csrf = CSRFProtect(app)  # Ensure CSRFProtect is initialized
 
     initialize_extensions(app)
     register_blueprints(app)
@@ -39,6 +40,7 @@ def register_blueprints(app):
     app.register_blueprint(course_bp, url_prefix='/courses')
     app.register_blueprint(question_bp, url_prefix='/questions')
     app.register_blueprint(rubric_bp, url_prefix='/rubrics')
+    app.register_blueprint(test_bp, url_prefix='/tests')
     app.register_blueprint(auth_bp)
 
 app = create_app()

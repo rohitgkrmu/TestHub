@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Test List{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <h2 class="text-center">Tests</h2>
+  <p class="text-center">Total Tests: {{ total_tests }}</p>
+
+  {% with url=url_for('tests.list_tests'), filter_options=filter_options, per_page=per_page %}
+    {% include '_search_sort_filter_form.html' %}
+  {% endwith %}
+    
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th scope="col"><a href="{{ url_for('tests.list_tests', sort_by='id', sort_order='asc') }}">#</a></th>
+        <th scope="col"><a href="{{ url_for('tests.list_tests', sort_by='name', sort_order='asc') }}">Name</a></th>
+        <th scope="col"><a href="{{ url_for('tests.list_tests', sort_by='course_id', sort_order='asc') }}">Course</a></th>
+        <th scope="col"><a href="{{ url_for('tests.list_tests', sort_by='rubric_id', sort_order='asc') }}">Rubric</a></th>
+        <th scope="col">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for test in tests %}
+      <tr>
+        <th scope="row">{{ loop.index }}</th>
+        <td>{{ test.name }}</td>
+        <td>{{ test.course.name }}</td>
+        <td>{{ test.rubric.name }}</td>
+        <td>
+          <a href="{{ url_for('tests.view_test', test_id=test.id) }}" class="btn btn-info btn-sm">View</a>
+          <a href="{{ url_for('tests.edit_test', test_id=test.id) }}" class="btn btn-primary btn-sm">Edit</a>
+          <form action="{{ url_for('tests.delete_test', test_id=test.id) }}" method="post" style="display:inline;">
+            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  {% with pagination=pagination, pagination_endpoint='tests.list_tests', per_page=per_page %}
+    {% include '_pagination_controls.html' %}
+  {% endwith %}
+  
+  <div class="text-center mt-4">
+    <a class="btn btn-primary btn-lg" href="{{ url_for('tests.create_test') }}" role="button">Create a New Test</a>
+  </div>
+</div>
+{% endblock %}

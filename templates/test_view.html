@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}View Test{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Test: {{ test.name }}</h2>
+    <h3>Course: {{ test.course.name }}</h3>
+    <h3>Rubric: {{ test.rubric.name }}</h3>
+    
+    <h4>Questions:</h4>
+    <ol>
+        {% for question in questions %}
+        <li>
+            <p>{{ question.content }}</p>
+            <p><strong>Bloom Level:</strong> {{ question.bloom_level }}</p>
+            <p><strong>Topic:</strong> {{ question.topic }}</p>
+            <p><strong>Difficulty:</strong> {{ question.difficulty }}</p>
+            <p><strong>Type:</strong> {{ question.question_type }}</p>
+        </li>
+        {% endfor %}
+    </ol>
+</div>
+{% endblock %}

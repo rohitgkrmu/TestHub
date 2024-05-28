@@ -5,16 +5,16 @@
   <div class="w-50">
     <h2 class="text-center">Sign Up</h2>
     <form method="POST" action="{{ url_for('auth.signup') }}">
+      {{ form.hidden_tag() }}  <!-- Include CSRF token -->
       <div class="form-group">
-        <label for="email">Email address:</label>
-        <input type="email" class="form-control" id="email" name="email" required>
+        {{ form.email.label }} {{ form.email(class_="form-control") }}
       </div>
       <div class="form-group">
-        <label for="password">Password:</label>
-        <input type="password" class="form-control" id="password" name="password" required>
+        {{ form.password.label }} {{ form.password(class_="form-control") }}
       </div>
-      <button type="submit" class="btn btn-primary btn-block">Sign Up</button>
+      <button type="submit" class="btn btn-primary btn-block">{{ form.submit.label }}</button>
     </form>
+    <p class="text-center mt-3">Already have an account? <a href="{{ url_for('auth.login') }}">Login</a></p>
   </div>
 </div>
 {% endblock %}

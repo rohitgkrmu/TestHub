@@ -1,6 +1,11 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, TextAreaField, IntegerField, FieldList, FormField, SubmitField
-from wtforms.validators import DataRequired, Optional
+from wtforms import StringField, TextAreaField, IntegerField, FieldList, FormField, SubmitField, SelectField, PasswordField
+from wtforms.validators import DataRequired, Optional, Email
+
+class LoginForm(FlaskForm):
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    submit = SubmitField('Login')
 
 class SectionForm(FlaskForm):
     section_name = StringField('Section Name', validators=[DataRequired()])
@@ -23,3 +28,10 @@ class RubricSectionsForm(FlaskForm):
 
 class EmptyForm(FlaskForm):
     pass
+
+class TestCreationForm(FlaskForm):
+    name = StringField('Test Name', validators=[DataRequired()])
+    course = SelectField('Course', coerce=int, validators=[DataRequired()])
+    rubric = SelectField('Rubric', coerce=int, validators=[DataRequired()])
+    submit = SubmitField('Create Test')
+

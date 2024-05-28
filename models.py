@@ -5,7 +5,6 @@ from flask_login import UserMixin
 
 db = SQLAlchemy()
 
-
 class Course(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
@@ -67,3 +66,14 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(150), unique=True, nullable=False)
     password = db.Column(db.String(150), nullable=False)
+
+class Test(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
+    rubric_id = db.Column(db.Integer, db.ForeignKey('rubric.id'), nullable=False)
+    questions = db.Column(db.Text, nullable=False)  # JSON string to store questions and their details
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+    course = db.relationship('Course', backref=db.backref('tests', lazy=True))
+    rubric = db.relationship('Rubric', backref=db.backref('tests', lazy=True))
